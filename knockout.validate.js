@@ -80,13 +80,12 @@
 			var fn = function () {
 				result_obs(validateFn(result_obs));
 			};
-			fn();
 
-			// if we are attached to an observable, then we want to know when the observable changes
-			// primarily used for the required/requiredID type validation models
-			if (ko.isObservable(valueAccessor())) {
-				valueAccessor().subscribe(fn);
-			}
+			// wrap in observable, so can track dependencies
+			ko.dependentObservable(function () {
+				fn();
+				return false;
+			});
 			
 			// control arrays need to be updated for isValid() to work
 			viewModel.__validate_results.push(result_obs);
